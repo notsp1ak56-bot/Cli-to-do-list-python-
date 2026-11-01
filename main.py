@@ -12,11 +12,12 @@ def menu_programm():
                     3. remove (удалить задачу)
                     4. complete (отметить решенной задачу)
                     5. resolved (посмотреть решенные задачи)
-                    6. exit (Выйти из программы)
+                    6. edit (изменить содержимое задачи)
+                    7. exit (Выйти из программы)
 
                 """)
 
-    choosr = typer.prompt("Ведите команду")
+    choosr = typer.prompt("Ведите номер команды")
     match choosr:
         case "1":
             add()
@@ -29,9 +30,10 @@ def menu_programm():
         case "5":
             comlete_viweng()
         case "6":
+            Edit_tasks()
+        case "7":
             print("Программа завершила свою работу")
         case _ :
-            print("В")
             menu_programm()
 
 
@@ -61,6 +63,7 @@ def viewing():
             menu_programm()
         else:
             print("Вы  походу не нажали на пробел ")
+
 
 
 def save(data):
@@ -110,6 +113,13 @@ def deleted():
 
     if not data:
         print("В списке ничего нет ")
+        while True:
+            return_in_menu = input("Нажмите Enter что бы вернуться в меню ")
+            if return_in_menu == "":
+                menu_programm()
+                break
+            else:
+                print("вы походу нажали что не то!!!")
         return
     for item in data:
         print(item["id"], item["text"])
@@ -151,6 +161,13 @@ def completed_task():
 
     if not data:
         print("Нет задач")
+        while True:
+            return_in_menu = input("Нажмите Enter что бы вернуться в меню: ")
+            if return_in_menu == "":
+                menu_programm()
+                break
+            else:
+                print("вы походу нажали что не то!!!")
         return
 
     # 2. Показываем id и text (status скрыт)
@@ -188,6 +205,10 @@ def completed_task():
     data[target_index]["status"] = 1
     finished = data.pop(target_index)            # убирает из data и возвращает
 
+    for item in data:
+        if item["id"] > task_id:
+            item["id"] -= 1
+
     # 7. Читаем done.json (или [])
     if not os.path.exists("done.json"):
         done = []
@@ -204,6 +225,13 @@ def completed_task():
     # потом data — уже без неё
 
     print(f"Задача #{task_id} перенесена в done.json")
+    while True:
+        return_for_comlete = input("Нажмите  Enter что бы венуться в меню ")
+        if return_for_comlete == "":
+            menu_programm()
+            break
+        else:
+            print("Походу вы ввели что не то !!!5")
     menu_programm()
 
 
@@ -212,6 +240,15 @@ def comlete_viweng():
         return []
     with open("data_completed.json","r",encoding="utf-8") as j:
         data = json.load(j)
+    if not data:
+        print("нету решшеных задач!!!")
+        while True:
+            return_in_menu = input("Нажмите Enter что бы вернуться в меню ")
+            if return_in_menu == "":
+                menu_programm()
+                break
+            else:
+                print("вы походу нажали что не то!!!")
     for item in data:
         print(item["id"], item["text"])
 
@@ -220,6 +257,59 @@ def comlete_viweng():
         menu_programm()
     else:
         print("Вы  походу не нажали на пробел ")
+
+def Edit_tasks():
+    if not os.path.exists("data.json"):
+        return []
+    with open("data.json","r", encoding="utf-8")as f:
+        data = json.load(f)
+
+    if not data:
+        print("Нет задач для изменения!!!")
+        while True:
+            Edit_taskss = input("нажмите на Enter что бы вернуться в меню:")
+            if Edit_taskss == "":
+                menu_programm()
+                break
+            else:
+                print("Вы ввели  что не то !!!")
+
+    for item in data:
+        print(item["id"] , item["text"])
+
+    raw = input("Введите номер задачи которую хотите изменить: ")
+
+    try:
+        id_edit = int(raw)
+    except ValueError:
+        print("Вы походу ввели что не то")
+
+    target_id = None
+    for i,item in enumerate(data):
+        if id_edit ==  item["id"]:
+            target_id = i
+            break
+    if target_id is None:
+        print(f"такой задачи по номеру {id_edit} введи id  существующей задачи")
+        return
+
+    text_edit = input("Введите текст")
+    data[target_id]["text"] = text_edit
+
+
+    with open("data.json", "w",encoding="utf-8")as f:
+        json.dump(data,f,ensure_ascii=False,indent=4)
+
+    print(f"Задача {id_edit} успешно изменена ")
+
+    while True:
+        return_for_menu = input("нажмите на Enter что бы вернуться в меню:")
+        if return_for_menu == "":
+            menu_programm()
+            break
+        else:
+            print("Вы что то ввели не то !!!")
+
 
 
 
