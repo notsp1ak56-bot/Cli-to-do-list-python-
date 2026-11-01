@@ -196,7 +196,7 @@ def completed_task():
             done = json.load(f)
 
     # 8. Дописываем и сохраняем ОБА файла
-    done = load_done()5
+    done = load_done()
     done.append(finished)
     save_done(done)                              # сначала done — чтобы не потерять
     save(data)
